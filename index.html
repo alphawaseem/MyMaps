@@ -4,37 +4,60 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Maps</title>
+	<link rel="stylesheet" type="text/css" href="w3.css">
 	<style>
 		html,
 		body {
 			height: 100%;
 			margin: 0;
 			padding: 0;
+			background: lightgray;
 		}
 		#map {
 			height: 100%;
 			z-index: 0;
 		}
-		form {
+		.fixed {
 			position: fixed;
-			margin: 10px;
+			z-index: 2;
+			margin:10px;
+		}
+		.list-view {
+			position: fixed;
 			z-index: 1;
+			height: 100%;
+			width: 250px;
+			padding: 1em;
+			padding-top: 4em;
+			background-color: rgba(100,44,55,0.5);
+		}
+		.list-view-hidden {
+			transform: translateX(-250px); 
 		}
 	</style>
-	<script src="jquery.js"></script>
-	<script src="ko.js"></script>
-	<script src="app.js"></script>
+	<script async src="main.js"></script>
 	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBx1ONMd5ldaModplk5IgW3JVveGgWAQjk&v=3&libraries=places&callback=initMap"></script>
 </head>
 <body>
-	<form data-bind="submit: searchMasjid">
-    Search: <input data-bind="value: masjidName" placeholder="Which masjid is nearest to you?" />
-    <button type="submit">Search</button>
-</form>
+
+	<div class="w3-btn-floating w3-gray fixed">☰</div>
+	<aside class="list-view list-view-hidden">
+		
+		<form data-bind="submit: searchMasjid">
+		    <input data-bind="value: masjidName" placeholder="Mosques near you..." />
+		    <input style="display:none" type="submit" value="Submit">
+		</form>
+	</aside>
 	<div id="map">
 		
 	</div>
+	<script src="jquery.js"></script>
+	<script src="ko.js"></script>
 	<script>
+
+	$(".fixed").click(function(){
+		$("aside").toggleClass('list-view-hidden');
+	})
 		class MapViewModel {
 			constructor(){
 				self.masjidName = ko.observable();

@@ -5,46 +5,9 @@
 var map;
 var infoWindow;
 var service;
-
+var masjids = [];
 var city =  {lat:13.001495,lng:76.095985};;
 
-function getLocation() {
-
-  if (navigator.geolocation) {
-    var optn = {
-        enableHighAccuracy : true,
-        timeout : Infinity,
-        maximumAge : 0
-    };
-    navigator.geolocation.getCurrentPosition(showPosition, showError, optn);
-  } else {
-    console.log('navigator not supported');
-  }   
-
-}
-
-          
-// Get the user's current position
-
-function showPosition(position) {
-  city = {lat:position.coords.latitude,lng:position.coords.longitude};
-}
-function showError(error) {
-  switch(error.code) {
-    case error.PERMISSION_DENIED:
-      alert("User denied the request for Geolocation.");
-      break;
-    case error.POSITION_UNAVAILABLE:
-      alert("Location information is unavailable.");
-      break;
-    case error.TIMEOUT:
-      alert("The request to get user location timed out.");
-      break;
-    case error.UNKNOWN_ERROR:
-      alert("An unknown error occurred.");
-      break;
-  }
-}
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center:city,
@@ -103,7 +66,8 @@ function addMarker(place) {
         return;
       }
       infoWindow.setContent(result.name + '<br>' + marker.position.lat().toFixed(5) + ' ' + marker.position.lng().toFixed(5));
-      console.log(result);
+      masjids.push(result.name);
+      console.log(masjids);
       infoWindow.open(map, marker);
     });
   });

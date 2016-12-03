@@ -2,12 +2,6 @@
 // parameter when you first load the API. For example:
 // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
-var map;
-var infoWindow;
-var service;
-var masjids = [];
-var city =  {lat:13.001495,lng:76.095985};;
-
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center:city,
@@ -23,32 +17,51 @@ function initMap() {
 
   // The idle event is a debounced event, so we can query & listen without
   // throwing too many requests at the server.
-  map.addListener('idle', performSearch);
+  //map.addListener('idle', performSearch);
 }
 
 function performSearch() {
-  var request = {
+  var query = {
     location : city,
     radius : 50000,
     type : 'mosque'
   };
-  service.radarSearch(request, callback);
+  service.radarSearch(query, storeMosques);
 }
 
-function callback(results, status) {
+function storeMosques(mosques, status) {
   if (status !== google.maps.places.PlacesServiceStatus.OK) {
     console.error(status);
     return;
   }
-  for (var i = 0, result; result = results[i]; i++) {
-    addMarker(result);
+  for (var i = 0, mosque; mosque = mosques[i]; i++) {
+    //addMarker(mosque);
+    addMosque(mosque);
   }
 }
+function addMosque(mosque){
+  service.getDetails(mosque, function(result, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        title = result.name;
+        let currentMasjid = new Masjid(title,mosque.geometry.location.lat(),mosque.geometry.location.lng())
+        masjids.push(currentMasjid);
+        addMarker(currentMasjid);
+      } else if ( status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
+        setTimeout(function(){
+          addMosque(mosque);
+        },200);
+      } else {
+        console.error(status);
+        return;
+      }
 
-function addMarker(place) {
+    });
+
+}
+function addMarker(mosque) {
   var marker = new google.maps.Marker({
     map: map,
-    position: place.geometry.location,
+    position: {lat:mosque.lat,lng:mosque.lng},
     icon: {
       url: 'mosque.png',
       anchor: new google.maps.Point(10, 10),
@@ -57,15 +70,9 @@ function addMarker(place) {
     optimized:false
   });
   google.maps.event.addListener(marker, 'mousedown', function() {
-    service.getDetails(place, function(result, status) {
-      if (status !== google.maps.places.PlacesServiceStatus.OK) {
-        console.error(status);
-        return;
-      }
-      infoWindow.setContent(result.name + '<br>' + marker.position.lat().toFixed(5) + ' ' + marker.position.lng().toFixed(5));
+      infoWindow.setContent(mosque.title + '<br>' + mosque.lat.toFixed(5) + ' ' + mosque.lng.toFixed(5));
       infoWindow.open(map, marker);
     });
-  });
 }
 
 
@@ -78,4 +85,23 @@ function addMarker(place) {
     this.lat = lat;
     this.lng = lng;
   }
+ }
+
+  let map;
+  let infoWindow;
+  let service;
+  let masjids = [];
+  let city =  {lat:13.001495,lng:76.095985};
+
+ function main(){
+  // 1. init map
+  // 2. perform search and store result
+  // 3. show results on map
+  // 4. show list view
+  // 5. bind list view with markers
+
+  
+  initMap();
+  performSearch();
+
  }

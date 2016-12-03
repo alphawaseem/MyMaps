@@ -91,7 +91,7 @@ function addMarker(mosque) {
   let infoWindow;
   let service;
   let masjids = [];
-  let city =  {lat:13.001495,lng:76.095985};
+  let city =  {lat:12.2958,lng:76.6394};
 
  function main(){
   // 1. init map

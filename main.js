@@ -87,11 +87,22 @@ function addMarker(mosque) {
   }
  }
 
+ class MasjidViewModel{
+  
+  constructor(){
+    this.self = this;
+    this.masjids = [new Masjid("Jamiya",13.1441,14.1212),new Masjid("Jam",545,4545)];
+    console.log(this.masjids[0]);
+  }
+
+ }
+
   let map;
   let infoWindow;
   let service;
   let masjids = [];
   let city =  {lat:12.2958,lng:76.6394};
+   
 
  function main(){
   // 1. init map
@@ -103,5 +114,6 @@ function addMarker(mosque) {
   
   initMap();
   performSearch();
+  ko.applyBindings(new MasjidViewModel(),document.getElementById("listview"));
 
  }

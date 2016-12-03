@@ -27,37 +27,44 @@
 			z-index: 1;
 			height: 100%;
 			width: 250px;
-			padding: 1em;
 			padding-top: 4em;
 			background-color: rgba(100,44,55,0.5);
 		}
 		.list-view-hidden {
 			transform: translateX(-250px); 
 		}
+		form,input{
+			width: 100%;
+		}
 	</style>
-	<script async src="main.js"></script>
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBx1ONMd5ldaModplk5IgW3JVveGgWAQjk&v=3&libraries=places&callback=main"></script>
+	
 </head>
 <body>
 
 	<div class="w3-btn-floating w3-gray fixed">☰</div>
 	<aside class="list-view list-view-hidden">
 		
-		<form data-bind="submit: searchMasjid">
+		<form id="form" class="w3-margin-bottom" data-bind="submit: searchMasjid">
 		    <input data-bind="value: masjidName" placeholder="Mosques near you..." />
-		    <input style="display:none" type="submit" value="Submit">
+		    <input style="display:none" type="submit">
 		</form>
+		<ul id="listview" class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach : masjids">
+
+			<li data-bind="text:title"></li>
+		</ul>
 	</aside>
 	<div id="map">
 		
 	</div>
 	<script src="jquery.js"></script>
 	<script src="ko.js"></script>
+	<script src="main.js"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3&libraries=places&callback=main"></script>
 	<script>
 
 	$(".fixed").click(function(){
 		$("aside").toggleClass('list-view-hidden');
-	})
+	});
 		class MapViewModel {
 			constructor(){
 				self.masjidName = ko.observable();
@@ -66,7 +73,7 @@
 	        	console.log(self.masjidName());
     		};
 		}
-		ko.applyBindings(new MapViewModel());
+		ko.applyBindings(new MapViewModel(),document.getElementById("form"));
 	</script>
 </body>
 </html>

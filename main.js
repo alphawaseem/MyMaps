@@ -17,14 +17,22 @@
 let service;
 let infoWindow;
 const CITY = {lat:12.2958,lng:76.6394}; // Mysuru city in karnataka
-const MAP_ZOOM = 14;
-const MARKER_ZOOM = 18;
+const MAP_ZOOM = 14; // map zoom level when loaded
+const MARKER_ZOOM = 18; // used to set zoom level when we click on marker or list item
 const MAP_HOLDER = document.getElementById('map');
 const MY_MAP_STYLE = [{
     stylers: [{ visibility: 'simplified' }]
   }];
 let map;
 
+/**
+* This function is starting point of the app which is called
+* when google maps api have been loaded to the page
+* This function will initialize map then search for 
+* masjids around a city and stores those masjids in an array
+* which is used by the ViewModel of knockout.js to 
+* create markers on the map
+**/
 function main(){
 
    map = initMap(MAP_HOLDER,{center:CITY,
@@ -71,7 +79,7 @@ function initMap(div,options) {
 
 /**
 * This function returns a promise. If promise is successful then
-* it resovles to results of radarSearch. radarSearch returns PlaceResult
+* it returns the results of radarSearch. radarSearch returns array of PlaceResult
 * objects, we will use these objects to get each mosque's coordinates 
 * This function assumes a PlaceService object is defined globally as service.
 *
@@ -85,12 +93,21 @@ function searchNearMosques(query){
         console.error(status);
         reject(status);
       }
+      console.log(result);
       resolve(result);
     });
 
   });
 }
 
+/**
+* This function returns a promise. This function takes the PlaceResult object
+* and getDetails from it. Here we are interseted only in name of the place. Once
+* we get the name of the place ie mosque. We construct Masjid object from it 
+* and returns the object.
+* @param {PlaceResult} mosque - This object already has coordinates in geometry.location
+*                     but we are using it here to get the name of the location ie masjid
+**/ 
 function getMosquesFromResult(mosque){
   return myExtractPromise = new Promise((resolve,reject)=>{
     service.getDetails(mosque, function(result, status) {

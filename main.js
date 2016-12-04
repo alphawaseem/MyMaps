@@ -23,7 +23,7 @@ function initMap() {
 function performSearch() {
   var query = {
     location : city,
-    radius : 50000,
+    radius : 1000,
     type : 'mosque'
   };
   service.radarSearch(query, storeMosques);
@@ -44,8 +44,7 @@ function addMosque(mosque){
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         title = result.name;
         let currentMasjid = new Masjid(title,mosque.geometry.location.lat(),mosque.geometry.location.lng())
-        masjids.push(currentMasjid);
-        addMarker(currentMasjid);
+        model.addMasjid(currentMasjid);
       } else if ( status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
         setTimeout(function(){
           addMosque(mosque);
@@ -58,22 +57,7 @@ function addMosque(mosque){
     });
 
 }
-function addMarker(mosque) {
-  var marker = new google.maps.Marker({
-    map: map,
-    position: {lat:mosque.lat,lng:mosque.lng},
-    icon: {
-      url: 'mosque.png',
-      anchor: new google.maps.Point(10, 10),
-      scaledSize: new google.maps.Size(50, 50)
-    },
-    optimized:false
-  });
-  google.maps.event.addListener(marker, 'mousedown', function() {
-      infoWindow.setContent(mosque.title + '<br>' + mosque.lat.toFixed(5) + ' ' + mosque.lng.toFixed(5));
-      infoWindow.open(map, marker);
-    });
-}
+
 
 
 /**
@@ -91,17 +75,37 @@ function addMarker(mosque) {
   
   constructor(){
     this.self = this;
-    this.masjids = [new Masjid("Jamiya",13.1441,14.1212),new Masjid("Jam",545,4545)];
-    console.log(this.masjids[0]);
+    this.masjids = ko.observableArray();
   }
+  addMasjid(masjid){
+    this.masjids.push(masjid);
+    this.addMarker(masjid);
+  }
+
+  addMarker(mosque) {
+  var marker = new google.maps.Marker({
+    map: map,
+    position: {lat:mosque.lat,lng:mosque.lng},
+    icon: {
+      url: 'mosque.png',
+      anchor: new google.maps.Point(10, 10),
+      scaledSize: new google.maps.Size(50, 50)
+    },
+    optimized:false
+  });
+  google.maps.event.addListener(marker, 'mousedown', function() {
+      infoWindow.setContent(mosque.title + '<br>' + mosque.lat.toFixed(5) + ' ' + mosque.lng.toFixed(5));
+      infoWindow.open(map, marker);
+    });
+}
 
  }
 
   let map;
   let infoWindow;
   let service;
-  let masjids = [];
   let city =  {lat:12.2958,lng:76.6394};
+  let model = new MasjidViewModel();  
    
 
  function main(){
@@ -111,9 +115,9 @@ function addMarker(mosque) {
   // 4. show list view
   // 5. bind list view with markers
 
-  
+
   initMap();
   performSearch();
-  ko.applyBindings(new MasjidViewModel(),document.getElementById("listview"));
+  ko.applyBindings(model,document.getElementById("listview"));
 
  }

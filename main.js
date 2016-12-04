@@ -2,7 +2,8 @@
 // parameter when you first load the API. For example:
 // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
 
-
+let service;
+let infoWindow;
 
 function main(){
 
@@ -22,21 +23,23 @@ function main(){
 
   if(map){
     let mosques = [];
-    let service = new google.maps.places.PlacesService(map);
-    let infoWindow = new google.maps.InfoWindow();
-    let query = {
+    service = new google.maps.places.PlacesService(map);
+    infoWindow = new google.maps.InfoWindow();
+    let query = { 
       location : CITY,
-      radius : 1000,
-      type : 'mosque'
+      radius : 1000, // radius to search within
+      type : 'mosque' // we are only intrested in places of type mosque
     };
-    getNearMosques(query,service).then((data) =>{
+
+    searchNearMosques(query).then((data) =>{
       for(let i=0,masjid;masjid=data[i];i++){
-        getMosquesFromResult(masjid,service).then((data)=>{
-          console.log(data);
+        getMosquesFromResult(masjid).then((data)=>{
+          mosques.push(data);
         });
       }
 
     });
+    console.log(mosques);
   }
 }
 
@@ -45,7 +48,7 @@ function main(){
 * This function returns a map object if valid dom element is provided
 * else returns undefined
 * @param {DOM Element} div - The dom element in which map will be loaded
-* @param {Object} options - Key-value pair to define options for map
+* @param {Object literal} options - Key-value pair to define options for map
 **/
 function initMap(div,options) {
   if(div){
@@ -54,7 +57,16 @@ function initMap(div,options) {
   return undefined;
 }
 
-function getNearMosques(query,service){
+/**
+* This function returns a promise. If promise is successful then
+* it resovles to results of radarSearch. radarSearch returns PlaceResult
+* objects, we will use these objects to get each mosque's coordinates 
+* This function assumes a PlaceService object is defined globally as service.
+*
+* @param {Object literal} query - key-value pairs used to query by radarSearch
+*
+**/ 
+function searchNearMosques(query){
   return myPromise = new Promise((resolve,reject) => {
     service.radarSearch(query,(result,status) => {
       if (status !== google.maps.places.PlacesServiceStatus.OK){
@@ -67,26 +79,7 @@ function getNearMosques(query,service){
   });
 }
 
-// function performSearch() {
-//   var query = {
-//     location : city,
-//     radius : 1000,
-//     type : 'mosque'
-//   };
-//   service.radarSearch(query, storeMosques);
-// }
-
-// function storeMosques(mosques, status) {
-//   if (status !== google.maps.places.PlacesServiceStatus.OK) {
-//     console.error(status);
-//     return;
-//   }
-//   for (var i = 0, mosque; mosque = mosques[i]; i++) {
-//     //addMarker(mosque);
-//     addMosque(mosque);
-//   }
-// }
-function getMosquesFromResult(mosque,service){
+function getMosquesFromResult(mosque){
   return myExtractPromise = new Promise((resolve,reject)=>{
     service.getDetails(mosque, function(result, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK) {

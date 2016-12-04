@@ -76,10 +76,20 @@ function addMosque(mosque){
   constructor(){
     this.self = this;
     this.masjids = ko.observableArray();
+    this.masjidName = ko.observable();
+    this.filteredList = ko.observableArray();
+    this.markers = [];
   }
   addMasjid(masjid){
     this.masjids.push(masjid);
     this.addMarker(masjid);
+  }
+  searchMasjid(){
+    console.log(this.masjidName());
+  }
+  showInfo(mosque){
+    console.log(mosque);
+    console.log(this.markers);
   }
 
   addMarker(mosque) {
@@ -97,6 +107,7 @@ function addMosque(mosque){
       infoWindow.setContent(mosque.title + '<br>' + mosque.lat.toFixed(5) + ' ' + mosque.lng.toFixed(5));
       infoWindow.open(map, marker);
     });
+  console.log(marker);
 }
 
  }

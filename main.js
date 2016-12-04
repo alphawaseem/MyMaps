@@ -1,21 +1,33 @@
-// This example requires the Places library. Include the libraries=places
-// parameter when you first load the API. For example:
-// <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+/**
+ * Represents a Masjid
+ * @constructor
+ * @param {string} name - Name of the masjid
+ * @param {float} lat - latitute of the masjid
+ * @param {float} lng - longititude of the masjid
+ **/
+ class Masjid{
+  constructor(name, lat , lng){
+    this.name = name;
+    this.lat = lat;
+    this.lng = lng;
+  }
+ }
 
 let service;
 let infoWindow;
+const CITY = {lat:12.2958,lng:76.6394}; // Mysuru city in karnataka
+const MAP_ZOOM = 14;
+const MARKER_ZOOM = 18;
+const MAP_HOLDER = document.getElementById('map');
+const MY_MAP_STYLE = [{
+    stylers: [{ visibility: 'simplified' }]
+  }];
+let map;
 
 function main(){
 
-  const CITY = {lat:12.2958,lng:76.6394}; // Mysuru city in karnataka
-  const MAP_ZOOM = 14;
-  const MARKER_ZOOM = 18;
-  const MAP_HOLDER = document.getElementById('map');
-  const MY_MAP_STYLE = [{
-      stylers: [{ visibility: 'simplified' }]
-    }];
-
-  let map = initMap(MAP_HOLDER,{center:CITY,
+   map = initMap(MAP_HOLDER,{center:CITY,
     zoom:MAP_ZOOM,
     styles:MY_MAP_STYLE,
     mapTypeControl : false
@@ -31,10 +43,10 @@ function main(){
       type : 'mosque' // we are only intrested in places of type mosque
     };
 
-    searchNearMosques(query).then((data) =>{
-      for(let i=0,masjid;masjid=data[i];i++){
-        getMosquesFromResult(masjid).then((data)=>{
-          mosques.push(data);
+    searchNearMosques(query).then((place_result) =>{
+      for(let i=0,masjid;masjid=place_result[i];i++){
+        getMosquesFromResult(masjid).then((mosque)=>{
+          mosques.push(mosque);
         });
       }
 
@@ -95,80 +107,5 @@ function getMosquesFromResult(mosque){
       }
     });
 
-});
+  });
 }
-
-
-
-/**
- Masjid object having its coords and title
- **/
- class Masjid{
-  constructor(title, lat , lng){
-    this.title = title;
-    this.lat = lat;
-    this.lng = lng;
-  }
- }
-
-//  class MasjidViewModel{
-  
-//   constructor(){
-//     this.self = this;
-//     this.masjids = ko.observableArray();
-//     this.masjidName = ko.observable();
-//     this.filteredList = ko.observableArray();
-//     this.markers = [];
-//   }
-//   addMasjid(masjid){
-//     this.masjids.push(masjid);
-//     this.addMarker(masjid);
-//   }
-//   searchMasjid(){
-//     console.log(this.masjidName());
-//   }
-//   showInfo(mosque){
-//     console.log(mosque);
-//     console.log(this.markers);
-//   }
-
-//   addMarker(mosque) {
-//   var marker = new google.maps.Marker({
-//     map: map,
-//     position: {lat:mosque.lat,lng:mosque.lng},
-//     icon: {
-//       url: 'mosque.png',
-//       anchor: new google.maps.Point(10, 10),
-//       scaledSize: new google.maps.Size(50, 50)
-//     },
-//     optimized:false
-//   });
-//   google.maps.event.addListener(marker, 'mousedown', function() {
-//       infoWindow.setContent(mosque.title + '<br>' + mosque.lat.toFixed(5) + ' ' + mosque.lng.toFixed(5));
-//       infoWindow.open(map, marker);
-//     });
-//   console.log(marker);
-// }
-
-//  }
-
-//   let map;
-//   let infoWindow;
-//   let service;
-//   let city =  
-//   let model = new MasjidViewModel();  
-   
-
- // function main(){
- //  // 1. init map
- //  // 2. perform search and store result
- //  // 3. show results on map
- //  // 4. show list view
- //  // 5. bind list view with markers
-
-
- //  initMap();
- //  performSearch();
- //  ko.applyBindings(model,document.getElementById("listview"));
-
- // }

@@ -59,7 +59,6 @@ function main(){
       }
 
     });
-    console.log(mosques);
   }
 }
 
@@ -93,7 +92,6 @@ function searchNearMosques(query){
         console.error(status);
         reject(status);
       }
-      console.log(result);
       resolve(result);
     });
 

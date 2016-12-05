@@ -16,19 +16,44 @@ class Masjid{
 
 
 class MapViewModel{
-  constructor(map){
+  constructor(){
     this.self = this;
     this.masjids = new Array();
-    this.map = map;
     this.filteredMasjids = ko.observableArray();
+    this.markers = [];
   }
   
   addMasjid(mosque){
     this.masjids.push(mosque);
     this.filteredMasjids.push(mosque);
+    this.addMarker(mosque);
   }
   showInfo(masjid){
-    console.log(masjid);
+    infoWindow.setContent(masjid.name());
+    infoWindow.setPosition({lat:masjid.lat,lng:masjid.lng});
+    map.setZoom(MARKER_ZOOM);
+    map.setCenter({lat:masjid.lat,lng:masjid.lng});
+    infoWindow.open(map);
+  }
+  addMarker(mosque){
+    let marker = new google.maps.Marker({
+      position : {lat:mosque.lat,lng:mosque.lng},
+      title : mosque.name(),
+      icon : this.setMarkerImage()
+    });
+    marker.setMap(map);
+    marker.addListener('click', ()=> {
+          this.showInfo(mosque);
+        });
+  }
+
+  setMarkerImage(){
+    return new google.maps.MarkerImage(
+    'mosque.png',
+    new google.maps.Size(71, 71),
+    new google.maps.Point(0, 0),
+    new google.maps.Point(17, 34),
+    new google.maps.Size(40, 40));
   }
 
 }
@@ -37,11 +62,12 @@ let service;
 let infoWindow;
 const CITY = {lat:12.2958,lng:76.6394}; // Mysuru city in karnataka
 const MAP_ZOOM = 14; // map zoom level when loaded
-const MARKER_ZOOM = 18; // used to set zoom level when we click on marker or list item
+const MARKER_ZOOM = 17; // used to set zoom level when we click on marker or list item
 const MAP_HOLDER = document.getElementById('map');
 const MY_MAP_STYLE = [{
     stylers: [{ visibility: 'simplified' }]
   }];
+let marker_image;
 let map;
 
 /**
@@ -61,12 +87,12 @@ function main(){
   });
 
   if(map){
-    let model = new MapViewModel(map);
+    let model = new MapViewModel();
     service = new google.maps.places.PlacesService(map);
     infoWindow = new google.maps.InfoWindow();
     let query = { 
       location : CITY,
-      radius : 1000, // radius to search within
+      radius : 5000, // radius to search within
       type : 'mosque' // we are only intrested in places of type mosque
     };
 

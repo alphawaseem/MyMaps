@@ -1,4 +1,14 @@
 
+const CITY = {lat:12.2958,lng:76.6394}; // Mysuru city in karnataka
+const MAP_ZOOM = 14; // map zoom level when loaded
+const MARKER_ZOOM = 17; // used to set zoom level when we click on marker or list item
+const MAP_HOLDER = document.getElementById('map');
+const MY_MAP_STYLE = [{stylers: [{ visibility: 'simplified' }]}];
+let marker_image;
+let map;
+let service;
+let infoWindow;
+
 /**
  * Represents a Masjid
  * @constructor
@@ -39,7 +49,7 @@ class MapViewModel{
     let marker = new google.maps.Marker({
       position : {lat:mosque.lat,lng:mosque.lng},
       title : mosque.name(),
-      icon : this.setMarkerImage()
+      icon : setMarkerImage()
     });
     marker.setMap(map);
     marker.addListener('click', ()=> {
@@ -47,28 +57,7 @@ class MapViewModel{
         });
   }
 
-  setMarkerImage(){
-    return new google.maps.MarkerImage(
-    'mosque.png',
-    new google.maps.Size(71, 71),
-    new google.maps.Point(0, 0),
-    new google.maps.Point(17, 34),
-    new google.maps.Size(40, 40));
-  }
-
 }
-
-let service;
-let infoWindow;
-const CITY = {lat:12.2958,lng:76.6394}; // Mysuru city in karnataka
-const MAP_ZOOM = 14; // map zoom level when loaded
-const MARKER_ZOOM = 17; // used to set zoom level when we click on marker or list item
-const MAP_HOLDER = document.getElementById('map');
-const MY_MAP_STYLE = [{
-    stylers: [{ visibility: 'simplified' }]
-  }];
-let marker_image;
-let map;
 
 /**
 * This function is starting point of the app which is called
@@ -171,3 +160,12 @@ function getMosquesFromResult(mosque){
 
   });
 }
+
+function setMarkerImage(){
+    return new google.maps.MarkerImage(
+    'mosque.png',
+    new google.maps.Size(71, 71),
+    new google.maps.Point(0, 0),
+    new google.maps.Point(17, 34),
+    new google.maps.Size(40, 40));
+  }

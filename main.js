@@ -6,13 +6,25 @@
  * @param {float} lat - latitute of the masjid
  * @param {float} lng - longititude of the masjid
  **/
- class Masjid{
+class Masjid{
   constructor(name, lat , lng){
-    this.name = name;
+    this.name = ko.observable(name);
     this.lat = lat;
     this.lng = lng;
   }
  }
+
+
+class MapViewModel{
+  constructor(map , masjids){
+    this.self = this;
+    this.masjids = masjids;
+    this.filteredMasjids = ko.observableArray(this.masjids);
+    console.log(this.filteredMasjids());
+  }
+
+
+}
 
 let service;
 let infoWindow;
@@ -59,6 +71,10 @@ function main(){
       }
 
     });
+
+    let model = new MapViewModel(map,mosques);
+
+    ko.applyBindings(model);
   }
 }
 

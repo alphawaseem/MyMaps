@@ -48,7 +48,7 @@
 		    <input data-bind="value: masjidName, valueUpdate: 'keyup'" placeholder="Mosques near you..." />
 		    <input style="display:none" type="submit">
 		</form>
-		<ul  class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach : masjids">
+		<ul  class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach : filterMasjids">
 
 			<li data-bind="text:title, click:$root.showInfo"></li>
 		</ul>

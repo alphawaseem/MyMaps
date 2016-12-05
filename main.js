@@ -16,13 +16,20 @@ class Masjid{
 
 
 class MapViewModel{
-  constructor(map , masjids){
+  constructor(map){
     this.self = this;
-    this.masjids = masjids;
-    this.filteredMasjids = ko.observableArray(this.masjids);
-    console.log(this.filteredMasjids());
+    this.masjids = new Array();
+    this.map = map;
+    this.filteredMasjids = ko.observableArray();
   }
-
+  
+  addMasjid(mosque){
+    this.masjids.push(mosque);
+    this.filteredMasjids.push(mosque);
+  }
+  showInfo(masjid){
+    console.log(masjid);
+  }
 
 }
 
@@ -54,7 +61,7 @@ function main(){
   });
 
   if(map){
-    let mosques = [];
+    let model = new MapViewModel(map);
     service = new google.maps.places.PlacesService(map);
     infoWindow = new google.maps.InfoWindow();
     let query = { 
@@ -66,14 +73,12 @@ function main(){
     searchNearMosques(query).then((place_result) =>{
       for(let i=0,masjid;masjid=place_result[i];i++){
         getMosquesFromResult(masjid).then((mosque)=>{
-          mosques.push(mosque);
+          model.addMasjid(mosque);
+          
         });
       }
 
     });
-
-    let model = new MapViewModel(map,mosques);
-
     ko.applyBindings(model);
   }
 }

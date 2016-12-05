@@ -44,13 +44,13 @@
 	<div class="w3-btn-floating w3-gray fixed">☰</div>
 	<aside id="listview" class="list-view list-view-hidden">
 		
-		<form id="form" class="w3-margin-bottom" data-bind="submit: searchMasjid">
+		<!-- <form id="form" class="w3-margin-bottom" data-bind="submit: searchMasjid">
 		    <input data-bind="value: masjidName, valueUpdate: 'keyup'" placeholder="Mosques near you..." />
 		    <input style="display:none" type="submit">
-		</form>
-		<ul  class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach : filterMasjids">
+		</form> -->
+		<ul  class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach :filteredMasjids">
 
-			<li data-bind="text:title, click:$root.showInfo"></li>
+			<li data-bind="text:name, click:$root.showInfo"></li>
 		</ul>
 	</aside>
 	<div id="map">

@@ -1,3 +1,14 @@
+$.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3&libraries=places")
+    .done(function(script, textStatus) {
+        main();
+    })
+    .fail(function(jqxhr, settings, exception) {
+        $("#id").text("Could not load maps");
+    });
+
+
+
+
 /**
  * CONSTANTS
  */
@@ -13,6 +24,48 @@ const MY_MAP_STYLE = [{ stylers: [{ visibility: 'simplified' }] }];
 let map;
 let service;
 let infoWindow;
+
+
+/**
+ * This function is starting point of the app which is called
+ * when google maps api have been loaded to the page
+ * This function will initialize map then search for 
+ * masjids around a city and stores those masjids in an array
+ * which is used by the ViewModel of knockout.js to 
+ * create markers on the map
+ **/
+function main() {
+
+    map = initMap(MAP_HOLDER, {
+        center: CITY,
+        zoom: MAP_ZOOM,
+        styles: MY_MAP_STYLE,
+        mapTypeControl: false
+    });
+
+    if (map) {
+
+        service = new google.maps.places.PlacesService(map);
+        infoWindow = new google.maps.InfoWindow();
+        let model = new MapViewModel(map);
+        let query = {
+            location: CITY,
+            radius: 1000, // radius to search within
+            type: 'mosque' // we are only intrested in places of type mosque
+        };
+        searchNearMosques(query).then((place_result) => {
+            for (let i = 0, masjid, len = place_result.length; i < len; i++) {
+                masjid = place_result[i];
+                getMosquesFromResult(masjid).then((mosque) => {
+                    model.addMasjid(mosque);
+                });
+            }
+        });
+
+        ko.applyBindings(model);
+    }
+}
+
 
 
 /**
@@ -138,46 +191,6 @@ class MapViewModel {
                 return false;
             }
         }));
-    }
-}
-
-/**
- * This function is starting point of the app which is called
- * when google maps api have been loaded to the page
- * This function will initialize map then search for 
- * masjids around a city and stores those masjids in an array
- * which is used by the ViewModel of knockout.js to 
- * create markers on the map
- **/
-function main() {
-
-    map = initMap(MAP_HOLDER, {
-        center: CITY,
-        zoom: MAP_ZOOM,
-        styles: MY_MAP_STYLE,
-        mapTypeControl: false
-    });
-
-    if (map) {
-
-        service = new google.maps.places.PlacesService(map);
-        infoWindow = new google.maps.InfoWindow();
-        let model = new MapViewModel(map);
-        let query = {
-            location: CITY,
-            radius: 50000, // radius to search within
-            type: 'mosque' // we are only intrested in places of type mosque
-        };
-        searchNearMosques(query).then((place_result) => {
-            for (let i = 0, masjid, len = place_result.length; i < len; i++) {
-                masjid = place_result[i];
-                getMosquesFromResult(masjid).then((mosque) => {
-                    model.addMasjid(mosque);
-                });
-            }
-        });
-
-        ko.applyBindings(model);
     }
 }
 

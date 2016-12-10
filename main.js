@@ -1,13 +1,20 @@
-const CITY = { lat: 12.2958, lng: 76.6394 }; // Mysuru city in karnataka
+/**
+ * CONSTANTS
+ */
+const CITY = { lat: 13.001547, lng: 76.095922 }; // My city hassan
 const MAP_ZOOM = 14; // map zoom level when loaded
-const MARKER_ZOOM = 17; // used to set zoom level when we click on marker or list item
+const MARKER_ZOOM = 16; // used to set zoom level when we click on marker or list item
 const MAP_HOLDER = document.getElementById('map');
 const MY_MAP_STYLE = [{ stylers: [{ visibility: 'simplified' }] }];
-let marker_image;
+
+/**
+ * Singleton variables used for map
+ */
 let map;
 let service;
 let infoWindow;
-let masjids = [];
+
+
 /**
  * Represents a Masjid
  * @constructor
@@ -20,25 +27,27 @@ class Masjid {
         this.name = ko.observable(name);
         this.lat = lat;
         this.lng = lng;
-        this.createMarker();
     }
+
+    /**
+     * This function creates a marker with current object's lat and lng position
+     */
     createMarker() {
         this.marker = new google.maps.Marker({
             position: { lat: this.lat, lng: this.lng },
             title: this.name(),
             icon: this.setMarkerImage()
         });
-        this.marker.addListener('click', () => {
-            infoWindow.setContent(this.name());
-            infoWindow.setPosition(this.marker.position);
-            map.setZoom(MARKER_ZOOM);
-            map.setCenter(this.marker.position);
-            infoWindow.open(map);
-        });
     }
-    showOnMap(map) {
+
+    /**
+     * This function set the object's marker on our Singleton map
+     */
+    showOnMap() {
         this.marker.setMap(map);
     }
+
+
     setMarkerImage() {
         return new google.maps.MarkerImage(
             'mosque.png',
@@ -50,28 +59,73 @@ class Masjid {
     getMarker() {
         return this.marker;
     }
+
 }
 
 
+
+/** 
+ * Represents MapViewModel
+ * @constructor  
+ */
 class MapViewModel {
     constructor() {
+        // list of all masjids. this array is not supposed to be changed 
+        // once fully populated
         this.fullMasjids = [];
+
+        // this variable is used to observe user input
         this.searchMasjid = ko.observable();
+
+        // initially this array will have all the masjids which will be 
+        // populated from addMasjid method. As user types we filter this
+        // array based on user input
         this.filteredMasjids = ko.observableArray();
     }
 
-    addMasjid(mosque) {
-        mosque.showOnMap(map);
-        this.fullMasjids.push(mosque);
-        this.filteredMasjids.push(mosque);
+    /**
+     * This function takes a Masjid object. Adds it to our arrays and will be shown on our map
+     * @param {Masjid} masjid - Masjid object 
+     **/
+    addMasjid(masjid) {
+
+        this.fullMasjids.push(masjid);
+        this.filteredMasjids.push(masjid);
+
+        masjid.createMarker(); //create marker
+        masjid.getMarker().addListener('click', () => { // add click listener
+            this.showInfoWindow(masjid);
+        });
+        masjid.showOnMap(map);
+
     }
+
+    /**
+     * This method will be called when user clicks on list item. When user clicks on 
+     * the list item , a corresponding {Masjid} object will be passed by knockout
+     * we use this object to get the location of the masjid and then open
+     * infowindow to show the prayer timings of that masjid.
+     * @param {Masjid} masjid - A masjid object
+     **/
     showInfoWindow(masjid) {
+
         infoWindow.setContent(masjid.name());
         infoWindow.setPosition({ lat: masjid.lat, lng: masjid.lng });
         map.setZoom(MARKER_ZOOM);
         map.setCenter({ lat: masjid.lat, lng: masjid.lng });
         infoWindow.open(map);
     }
+
+    /**
+     * This function is called when user types something on search box
+     * We have binded our searchbox to searchMasjid instace with help knockout
+     *  observable, so that it gets updated automatically when user
+     * types on the searchbox.
+     * This function filters the masjids based on user input and stores the
+     * result on filteredMasjids observableArray. We have binded this 
+     * array to our list view so that it will get automatically updated
+     * with changes in filteredMasjids 
+     **/
     resetList() {
         this.filteredMasjids(this.fullMasjids.filter(masjid => {
             let name = masjid.name().toLowerCase();
@@ -80,7 +134,7 @@ class MapViewModel {
                 masjid.showOnMap(map);
                 return true;
             } else {
-                masjid.showOnMap(null)
+                masjid.showOnMap(null);
                 return false;
             }
         }));
@@ -108,14 +162,15 @@ function main() {
 
         service = new google.maps.places.PlacesService(map);
         infoWindow = new google.maps.InfoWindow();
-        let model = new MapViewModel();
+        let model = new MapViewModel(map);
         let query = {
             location: CITY,
-            radius: 1000, // radius to search within
+            radius: 50000, // radius to search within
             type: 'mosque' // we are only intrested in places of type mosque
         };
         searchNearMosques(query).then((place_result) => {
-            for (let i = 0, masjid; masjid = place_result[i]; i++) {
+            for (let i = 0, masjid, len = place_result.length; i < len; i++) {
+                masjid = place_result[i];
                 getMosquesFromResult(masjid).then((mosque) => {
                     model.addMasjid(mosque);
                 });
@@ -130,12 +185,12 @@ function main() {
 /**
  * This function returns a map object if valid dom element is provided
  * else returns undefined
- * @param {DOM Element} div - The dom element in which map will be loaded
- * @param {Object literal} options - Key-value pair to define options for map
+ * @param {HTMLElement} div - The dom element in which map will be loaded
+ * @param {Object} options - Key-value pair to define options for map
  **/
 function initMap(div, options) {
     if (div) {
-        return map = new google.maps.Map(div, options);
+        return new google.maps.Map(div, options);
     }
     return undefined;
 }
@@ -146,11 +201,11 @@ function initMap(div, options) {
  * objects, we will use these objects to get each mosque's coordinates 
  * This function assumes a PlaceService object is defined globally as service.
  *
- * @param {Object literal} query - key-value pairs used to query by radarSearch
+ * @param {Object} query - key-value pairs used to query by radarSearch
  *
  **/
 function searchNearMosques(query) {
-    return myPromise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         service.radarSearch(query, (result, status) => {
             if (status !== google.maps.places.PlacesServiceStatus.OK) {
                 console.error(status);
@@ -171,7 +226,7 @@ function searchNearMosques(query) {
  *                     but we are using it here to get the name of the location ie masjid
  **/
 function getMosquesFromResult(mosque) {
-    return myExtractPromise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         service.getDetails(mosque, function(result, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 title = result.name;

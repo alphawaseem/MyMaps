@@ -20,6 +20,35 @@ class Masjid {
         this.name = ko.observable(name);
         this.lat = lat;
         this.lng = lng;
+        this.createMarker();
+    }
+    createMarker() {
+        this.marker = new google.maps.Marker({
+            position: { lat: this.lat, lng: this.lng },
+            title: this.name(),
+            icon: this.setMarkerImage()
+        });
+        this.marker.addListener('click', () => {
+            infoWindow.setContent(this.name());
+            infoWindow.setPosition(this.marker.position);
+            map.setZoom(MARKER_ZOOM);
+            map.setCenter(this.marker.position);
+            infoWindow.open(map);
+        });
+    }
+    showOnMap(map) {
+        this.marker.setMap(map);
+    }
+    setMarkerImage() {
+        return new google.maps.MarkerImage(
+            'mosque.png',
+            new google.maps.Size(71, 71),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(17, 34),
+            new google.maps.Size(40, 40));
+    }
+    getMarker() {
+        return this.marker;
     }
 }
 
@@ -27,47 +56,34 @@ class Masjid {
 class MapViewModel {
     constructor() {
         this.fullMasjids = [];
+        this.searchMasjid = ko.observable();
         this.filteredMasjids = ko.observableArray();
-        this.masjidName = ko.observable();
     }
 
     addMasjid(mosque) {
+        mosque.showOnMap(map);
         this.fullMasjids.push(mosque);
         this.filteredMasjids.push(mosque);
     }
-    showInfo(masjid) {
+    showInfoWindow(masjid) {
         infoWindow.setContent(masjid.name());
         infoWindow.setPosition({ lat: masjid.lat, lng: masjid.lng });
         map.setZoom(MARKER_ZOOM);
         map.setCenter({ lat: masjid.lat, lng: masjid.lng });
         infoWindow.open(map);
     }
-    addMarker(mosque) {
-
-        let marker = new google.maps.Marker({
-            position: { lat: mosque.lat, lng: mosque.lng },
-            title: mosque.name(),
-            icon: setMarkerImage()
-        });
-        marker.setMap(map);
-        marker.addListener('click', () => {
-            this.showInfo(mosque);
-        });
-    }
     resetList() {
-        if (this.masjidName()) {
-            this.filteredMasjids(this.filteredMasjids().filter(masjid => {
-                if (masjid.name().toLowerCase().includes(this.masjidName().toLowerCase()))
-                    return true;
-                else
-                    return false;
-
-            }));
-        } else {
-            this.filteredMasjids(this.fullMasjids);
-
-        }
-
+        this.filteredMasjids(this.fullMasjids.filter(masjid => {
+            let name = masjid.name().toLowerCase();
+            let search = this.searchMasjid().toLowerCase();
+            if (name.includes(search)) {
+                masjid.showOnMap(map);
+                return true;
+            } else {
+                masjid.showOnMap(null)
+                return false;
+            }
+        }));
     }
 }
 
@@ -102,8 +118,6 @@ function main() {
             for (let i = 0, masjid; masjid = place_result[i]; i++) {
                 getMosquesFromResult(masjid).then((mosque) => {
                     model.addMasjid(mosque);
-                    model.addMarker(mosque);
-
                 });
             }
         });
@@ -173,13 +187,4 @@ function getMosquesFromResult(mosque) {
         });
 
     });
-}
-
-function setMarkerImage() {
-    return new google.maps.MarkerImage(
-        'mosque.png',
-        new google.maps.Size(71, 71),
-        new google.maps.Point(0, 0),
-        new google.maps.Point(17, 34),
-        new google.maps.Size(40, 40));
 }

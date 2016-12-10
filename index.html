@@ -53,10 +53,10 @@
     <aside id="listview" class="list-view list-view-hidden">
 
         <form id="form" class="w3-margin-bottom">
-            <input data-bind="textInput:masjidName,event:{keyup:resetList}" placeholder="Mosques near you..." />
+            <input data-bind="textInput:searchMasjid,event:{input:resetList}" placeholder="Mosques near you..." />
         </form>
         <ul class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach :filteredMasjids">
-            <li data-bind="text:name, click:$root.showInfo"></li>
+            <li data-bind="text:name, click:$root.showInfoWindow"></li>
         </ul>
     </aside>
     <div id="map">

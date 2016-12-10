@@ -1,73 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Maps</title>
-	<link rel="stylesheet" type="text/css" href="w3.css">
-	<style>
-		html,
-		body {
-			height: 100%;
-			margin: 0;
-			padding: 0;
-			background: lightgray;
-		}
-		#map {
-			height: 100%;
-			z-index: 0;
-		}
-		.fixed {
-			position: fixed;
-			z-index: 2;
-			margin:10px;
-		}
-		.list-view {
-			position: fixed;
-			z-index: 1;
-			height: 100%;
-			width: 250px;
-			padding-top: 4em;
-			background-color: rgba(100,44,55,0.5);
-		}
-		.list-view-hidden {
-			transform: translateX(-250px); 
-		}
-		form,input{
-			width: 100%;
-		}
-	</style>
-	
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maps</title>
+    <link rel="stylesheet" type="text/css" href="w3.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: lightgray;
+        }
+        
+        #map {
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .fixed {
+            position: fixed;
+            z-index: 2;
+            margin: 10px;
+        }
+        
+        .list-view {
+            position: fixed;
+            z-index: 1;
+            height: 100%;
+            width: 250px;
+            padding-top: 4em;
+            background-color: rgba(100, 44, 55, 0.5);
+        }
+        
+        .list-view-hidden {
+            transform: translateX(-250px);
+        }
+        
+        form,
+        input {
+            width: 100%;
+        }
+    </style>
+
 </head>
+
 <body>
 
-	<div class="w3-btn-floating w3-gray fixed toggle-view">☰</div>
-	<aside id="listview" class="list-view list-view-hidden">
-		
-		<!-- <form id="form" class="w3-margin-bottom" data-bind="submit: searchMasjid">
-		    <input data-bind="value: masjidName, valueUpdate: 'keyup'" placeholder="Mosques near you..." />
-		    <input style="display:none" type="submit">
-		</form> -->
-		<ul  class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach :filteredMasjids">
+    <div class="w3-btn-floating w3-gray fixed toggle-view">☰</div>
+    <aside id="listview" class="list-view list-view-hidden">
 
-			<li data-bind="text:name, click:$root.showInfo"></li>
-		</ul>
-	</aside>
-	<div id="map">
-		
-	</div>
-	<script src="jquery.js"></script>
-	<script src="ko.js"></script>
-	<script src="main.js"></script>
-	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3&libraries=places&callback=main"></script>
-	<script>
-
-	if( window.innerWidth > 400){
-		$("aside").toggleClass('list-view-hidden');
-	}
-	$(".toggle-view").click(function(){
-		$("aside").toggleClass('list-view-hidden');
-	});
-	</script>
+        <form id="form" class="w3-margin-bottom">
+            <input data-bind="textInput:masjidName,event:{keyup:resetList}" placeholder="Mosques near you..." />
+        </form>
+        <ul class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach :filteredMasjids">
+            <li data-bind="text:name, click:$root.showInfo"></li>
+        </ul>
+    </aside>
+    <div id="map">
+    </div>
+    <script src="jquery.js"></script>
+    <script src="ko.js"></script>
+    <script src="main.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3&libraries=places&callback=main"></script>
+    <script>
+        if (window.innerWidth > 400) {
+            $("aside").toggleClass('list-view-hidden');
+        }
+        $(".toggle-view").click(function() {
+            $("aside").toggleClass('list-view-hidden');
+        });
+    </script>
 </body>
+
 </html>

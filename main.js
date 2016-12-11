@@ -98,7 +98,7 @@ class Masjid {
     /**
      * This function set the object's marker on our Singleton map
      */
-    showOnMap() {
+    showOnMap(map) {
         this.marker.setMap(map);
     }
 
@@ -124,7 +124,7 @@ class Masjid {
  * @constructor  
  */
 class MapViewModel {
-    constructor() {
+    constructor(map) {
         // list of all masjids. this array is not supposed to be changed 
         // once fully populated
         this.fullMasjids = [];
@@ -136,6 +136,7 @@ class MapViewModel {
         // populated from addMasjid method. As user types we filter this
         // array based on user input
         this.filteredMasjids = ko.observableArray();
+        this.map = map;
     }
 
     /**
@@ -151,7 +152,7 @@ class MapViewModel {
         masjid.getMarker().addListener('click', () => { // add click listener
             this.showInfoWindow(masjid);
         });
-        masjid.showOnMap(map);
+        masjid.showOnMap(this.map);
 
     }
 
@@ -190,7 +191,7 @@ class MapViewModel {
             let name = masjid.name().toLowerCase();
             let search = this.searchMasjid().toLowerCase();
             if (name.includes(search)) {
-                masjid.showOnMap(map);
+                masjid.showOnMap(this.map);
                 return true;
             } else {
                 masjid.showOnMap(null);

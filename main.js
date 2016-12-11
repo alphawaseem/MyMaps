@@ -111,13 +111,6 @@ class Masjid {
             new google.maps.Point(17, 34),
             new google.maps.Size(40, 40));
     }
-    toggleBounce() {
-        if (this.marker.getAnimation() !== null) {
-            this.marker.setAnimation(null);
-        } else {
-            this.marker.setAnimation(google.maps.Animation.BOUNCE);
-        }
-    }
     getMarker() {
         return this.marker;
     }
@@ -176,7 +169,10 @@ class MapViewModel {
         map.setZoom(MARKER_ZOOM);
         map.setCenter({ lat: masjid.lat, lng: masjid.lng });
         infoWindow.open(map);
-        masjid.toggleBounce();
+        masjid.getMarker().setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(() => {
+            masjid.getMarker().setAnimation(null);
+        }, 3000);
     }
 
     /**

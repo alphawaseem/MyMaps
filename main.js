@@ -3,7 +3,8 @@ $.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9
         main();
     })
     .fail(function(jqxhr, settings, exception) {
-        $("#id").text("Could not load maps");
+        $("#map").text("Could not load maps");
+        console.error("Failed to get google maps. Please check your url and/or api key");
     });
 
 
@@ -50,7 +51,7 @@ function main() {
         let model = new MapViewModel(map);
         let query = {
             location: CITY,
-            radius: 1000, // radius to search within
+            radius: 5000, // radius to search within
             type: 'mosque' // we are only intrested in places of type mosque
         };
         searchNearMosques(query).then((place_result) => {
@@ -89,6 +90,7 @@ class Masjid {
         this.marker = new google.maps.Marker({
             position: { lat: this.lat, lng: this.lng },
             title: this.name(),
+            animation: google.maps.Animation.DROP,
             icon: this.setMarkerImage()
         });
     }

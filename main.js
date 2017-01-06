@@ -18,22 +18,21 @@ const MAP_ZOOM = 14; // map zoom level when loaded
 const MARKER_ZOOM = 16; // used to set zoom level when we click on marker or list item
 const MAP_HOLDER = document.getElementById('map');
 const MY_MAP_STYLE = [{ stylers: [{ visibility: 'simplified' }] }];
-
-/**
- * Singleton variables used for map
- */
-let map;
-let infoWindow;
-
-// Initialize Firebase
-let config = {
+const config = {
     apiKey: "AIzaSyBBrwoN7BSFC77ECuCKobQHpPBnxHwQvfI",
     authDomain: "masjid-prayer-timing.firebaseapp.com",
     databaseURL: "https://masjid-prayer-timing.firebaseio.com",
     storageBucket: "masjid-prayer-timing.appspot.com",
     messagingSenderId: "37412697423"
 };
+/**
+ * Singleton variables used for map
+ */
+let map;
+let infoWindow;
+// Initialize Firebase
 firebase.initializeApp(config);
+
 
 /**
  * This function is starting point of the app which is called
@@ -58,9 +57,10 @@ function main() {
         let model = new MapViewModel(map);
 
         firebase.database().ref('/masjids/').once('value').then(function(snapshot) {
-            let masjids = snapshot.val();
-            masjids.forEach(masjid => {
-                model.addMasjid(new Masjid(masjid));
+            snapshot.forEach(masjid => {
+                let masjidObj = masjid.val();
+                masjidObj.id = masjid.key;
+                model.addMasjid(new Masjid(masjidObj));
             });
         });
 
@@ -83,11 +83,7 @@ class Masjid {
         this.lat = masjid.lat;
         this.lng = masjid.lng;
         this.city = masjid.city;
-        this.fajr = masjid.fajr;
-        this.zohr = masjid.zohr;
-        this.asr = masjid.asr;
-        this.mughrib = masjid.mughrib;
-        this.isha = masjid.isha;
+        this.id = masjid.id;
     }
 
     /**
@@ -151,7 +147,6 @@ class MapViewModel {
      * @param {Masjid} masjid - Masjid object 
      **/
     addMasjid(masjid) {
-
         this.fullMasjids.push(masjid);
         this.filteredMasjids.push(masjid);
 
@@ -171,24 +166,32 @@ class MapViewModel {
      * @param {Masjid} masjid - A masjid object
      **/
     showInfoWindow(masjid) {
-
-        let content = `<div class="w3-card-4">
+        let firebaseResult;
+        firebase.database().ref('/masjids/' + masjid.id).once('value').then(function(snapshot) {
+            firebaseResult = snapshot.val();
+            let content = `<div>
             <header><h3>${masjid.name()}</h3></header>
-            <section><ul>
-            <li> Fajr <span class="w3-right">${masjid.fajr}</span></li>
+            <section><ul class="w3-ul w3-card-4">
+            <li class="w3-blue"> Fajr <span class="w3-right">${firebaseResult.fajr}</span></li>
+            <li class="w3-red"> Zohr <span class="w3-right">${firebaseResult.zohr}</span></li>
+            <li class="w3-teal"> Asr <span class="w3-right">${firebaseResult.asr}</span></li>
+            <li class="w3-orange"> Mughrib <span class="w3-right">${firebaseResult.mughrib}</span></li>
+            <li class="w3-black"> Isha <span class="w3-right">${firebaseResult.isha}</span></li>     
             </ul>
             </section>
             <footer><small>${masjid.city}</small></footer>    
         </div>`
-        infoWindow.setContent(content);
-        infoWindow.setPosition({ lat: masjid.lat, lng: masjid.lng });
-        map.setZoom(MARKER_ZOOM);
-        map.setCenter({ lat: masjid.lat, lng: masjid.lng });
-        infoWindow.open(map);
-        masjid.getMarker().setAnimation(google.maps.Animation.BOUNCE);
-        setTimeout(() => {
-            masjid.getMarker().setAnimation(null);
-        }, 3000);
+            infoWindow.setContent(content);
+            infoWindow.setPosition({ lat: masjid.lat, lng: masjid.lng });
+            map.setZoom(MARKER_ZOOM);
+            map.setCenter({ lat: masjid.lat, lng: masjid.lng });
+            infoWindow.open(map);
+            masjid.getMarker().setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(() => {
+                masjid.getMarker().setAnimation(null);
+            }, 3000);
+        });
+
     }
 
     /**

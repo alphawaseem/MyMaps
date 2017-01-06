@@ -26,6 +26,16 @@ let map;
 let service;
 let infoWindow;
 
+// Initialize Firebase
+let config = {
+    apiKey: "AIzaSyBBrwoN7BSFC77ECuCKobQHpPBnxHwQvfI",
+    authDomain: "masjid-prayer-timing.firebaseapp.com",
+    databaseURL: "https://masjid-prayer-timing.firebaseio.com",
+    storageBucket: "masjid-prayer-timing.appspot.com",
+    messagingSenderId: "37412697423"
+};
+firebase.initializeApp(config);
+
 
 /**
  * This function is starting point of the app which is called
@@ -180,7 +190,15 @@ class MapViewModel {
      **/
     showInfoWindow(masjid) {
 
-        infoWindow.setContent(masjid.name());
+        let content = `<div class="w3-card-4">
+            <header><h3>${masjid.name()}</h3></header>
+            <section><ul>
+            <li> Fajr <span class="w3-right">${masjid.fajr}</span></li>
+            </ul>
+            </section>
+            <footer><small>${masjid.city}</small></footer>    
+        </div>`
+        infoWindow.setContent(content);
         infoWindow.setPosition({ lat: masjid.lat, lng: masjid.lng });
         map.setZoom(MARKER_ZOOM);
         map.setCenter({ lat: masjid.lat, lng: masjid.lng });

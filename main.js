@@ -13,7 +13,7 @@ $.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9
 /**
  * CONSTANTS
  */
-const CITY = { lat: 13.001547, lng: 76.095922 }; // My city hassan
+const CITY = { lat: 13.001547, lng: 76.095922 }; // My city hassan,Karnataka
 const MAP_ZOOM = 14; // map zoom level when loaded
 const MARKER_ZOOM = 16; // used to set zoom level when we click on marker or list item
 const MAP_HOLDER = document.getElementById('map');
@@ -23,7 +23,6 @@ const MY_MAP_STYLE = [{ stylers: [{ visibility: 'simplified' }] }];
  * Singleton variables used for map
  */
 let map;
-let service;
 let infoWindow;
 
 // Initialize Firebase
@@ -35,7 +34,6 @@ let config = {
     messagingSenderId: "37412697423"
 };
 firebase.initializeApp(config);
-
 
 /**
  * This function is starting point of the app which is called
@@ -56,30 +54,15 @@ function main() {
 
     if (map) {
 
-        service = new google.maps.places.PlacesService(map);
         infoWindow = new google.maps.InfoWindow();
         let model = new MapViewModel(map);
-        let query = {
-            location: CITY,
-            radius: 5000, // radius to search within
-            type: 'mosque' // we are only intrested in places of type mosque
-        };
-        // searchNearMosques(query).then((place_result) => {
-        //     for (let i = 0, masjid, len = place_result.length; i < len; i++) {
-        //         masjid = place_result[i];
-        //         getMosquesFromResult(masjid).then((mosque) => {
-        //             model.addMasjid(mosque);
-        //         });
-        //     }
-        // });
 
-        $.getJSON("data.json", masjids => {
+        firebase.database().ref('/masjids/').once('value').then(function(snapshot) {
+            let masjids = snapshot.val();
             masjids.forEach(masjid => {
                 model.addMasjid(new Masjid(masjid));
             });
-        }).fail(error => {
-            // showError();
-        })
+        });
 
         ko.applyBindings(model);
     }
@@ -105,7 +88,6 @@ class Masjid {
         this.asr = masjid.asr;
         this.mughrib = masjid.mughrib;
         this.isha = masjid.isha;
-        console.log(this);
     }
 
     /**
@@ -247,52 +229,3 @@ function initMap(div, options) {
     }
     return undefined;
 }
-
-// /**
-//  * This function returns a promise. If promise is successful then
-//  * it returns the results of radarSearch. radarSearch returns array of PlaceResult
-//  * objects, we will use these objects to get each mosque's coordinates 
-//  * This function assumes a PlaceService object is defined globally as service.
-//  *
-//  * @param {Object} query - key-value pairs used to query by radarSearch
-//  *
-//  **/
-// function searchNearMosques(query) {
-//     return new Promise((resolve, reject) => {
-//         service.radarSearch(query, (result, status) => {
-//             if (status !== google.maps.places.PlacesServiceStatus.OK) {
-//                 console.error(status);
-//                 reject(status);
-//             }
-//             resolve(result);
-//         });
-
-//     });
-// }
-
-// /**
-//  * This function returns a promise. This function takes the PlaceResult object
-//  * and getDetails from it. Here we are interseted only in name of the place. Once
-//  * we get the name of the place ie mosque. We construct Masjid object from it 
-//  * and returns the object.
-//  * @param {PlaceResult} mosque - This object already has coordinates in geometry.location
-//  *                     but we are using it here to get the name of the location ie masjid
-//  **/
-// function getMosquesFromResult(mosque) {
-//     return new Promise((resolve, reject) => {
-//         service.getDetails(mosque, function(result, status) {
-//             if (status === google.maps.places.PlacesServiceStatus.OK) {
-//                 title = result.name;
-//                 resolve(new Masjid(title, mosque.geometry.location.lat(), mosque.geometry.location.lng()));
-//             } else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-//                 setTimeout(function() {
-//                     getMosquesFromResult(mosque);
-//                 }, 200);
-//             } else {
-//                 console.error(status);
-//                 reject(error);
-//             }
-//         });
-
-//     });
-// }

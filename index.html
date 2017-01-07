@@ -6,10 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maps</title>
     <link rel="stylesheet" type="text/css" href="w3.css">
-    <script src="jquery.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
-    <script async src="ko.js"></script>
-    <script async src="main.js"></script>
+    <link rel="stylesheet" type="text/css" href="mystyles.css">
 
 </head>
 
@@ -28,14 +25,23 @@
     <div id="map">
     </div>
 
+    <script src="jquery.js"></script>
     <script>
+        let onMobile = false;
         if (window.innerWidth > 400) {
             $("aside").toggleClass('list-view-hidden');
+        } else {
+            $(".toggle-view").click(function() {
+                $("aside").toggleClass('list-view-hidden');
+            });
+            onMobile = true;
         }
-        $(".toggle-view").click(function() {
-            $("aside").toggleClass('list-view-hidden');
-        });
     </script>
+    <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+    <script src="ko.js"></script>
+    <script async src="main.js"></script>
+
+
 
 </body>
 

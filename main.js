@@ -1,4 +1,4 @@
-$.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3&libraries=places")
+$.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3")
     .done(function(script, textStatus) {
         main();
     })

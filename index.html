@@ -54,10 +54,10 @@
             `);
         }
     </script>
-    <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js" onerror="showError('Could not load Firebase!')"></script>
     <script src="ko.js"></script>
     <script src="main.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3&callback=main" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3&callback=main" onerror="showError('Could not load Google Maps!')" async defer></script>
 </body>
 
 </html>

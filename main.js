@@ -44,7 +44,7 @@ function main() {
         infoWindow = new google.maps.InfoWindow();
         let model = new MapViewModel(map);
 
-        firebase.database().ref('/masjimds/').once('value').then(function(snapshot) {
+        firebase.database().ref('/masjids/').once('value').then(function(snapshot) {
             if (snapshot.val()) {
                 snapshot.forEach(masjid => {
                     let masjidObj = masjid.val();

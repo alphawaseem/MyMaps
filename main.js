@@ -154,10 +154,6 @@ class MapViewModel {
      * @param {Masjid} masjid - A masjid object
      **/
     showInfoWindow(masjid) {
-        if (onMobile) {
-            $("aside").toggleClass('list-view-hidden');
-
-        }
         let firebaseResult;
         firebase.database().ref('/masjids/' + masjid.id).once('value').then(function(snapshot) {
             firebaseResult = snapshot.val();
@@ -183,6 +179,9 @@ class MapViewModel {
                 masjid.getMarker().setAnimation(null);
             }, 3000);
         });
+        if (onMobile && !aside.hasClass('list-view-hidden')) {
+            aside.toggleClass('list-view-hidden');
+        }
 
     }
 

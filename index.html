@@ -28,13 +28,14 @@
     <script src="jquery.js"></script>
     <script>
         let onMobile = false;
+        let aside = $("aside");
         if (window.innerWidth > 400) {
-            $("aside").toggleClass('list-view-hidden');
+            aside.toggleClass('list-view-hidden');
         } else {
             onMobile = true;
         }
         $(".toggle-view").click(function() {
-            $("aside").toggleClass('list-view-hidden');
+            aside.toggleClass('list-view-hidden');
         });
     </script>
     <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>

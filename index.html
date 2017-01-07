@@ -31,18 +31,15 @@
         if (window.innerWidth > 400) {
             $("aside").toggleClass('list-view-hidden');
         } else {
-            $(".toggle-view").click(function() {
-                $("aside").toggleClass('list-view-hidden');
-            });
             onMobile = true;
         }
+        $(".toggle-view").click(function() {
+            $("aside").toggleClass('list-view-hidden');
+        });
     </script>
     <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
     <script src="ko.js"></script>
     <script async src="main.js"></script>
-
-
-
 </body>
 
 </html>

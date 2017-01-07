@@ -35,6 +35,11 @@ li {
     transform: translateX(-250px);
 }
 
+#error-block {
+    width: 50%;
+    margin: auto;
+}
+
 form,
 input {
     width: 100%;

@@ -11,23 +11,28 @@
 </head>
 
 <body>
+    <div id="success-block">
+        <div class="w3-btn-floating w3-gray fixed toggle-view">☰</div>
+        <aside id="listview" class="list-view list-view-hidden">
 
-    <div class="w3-btn-floating w3-gray fixed toggle-view">☰</div>
-    <aside id="listview" class="list-view list-view-hidden">
-
-        <form id="form" class="w3-margin-bottom">
-            <input data-bind="textInput:searchMasjid,event:{input:resetList}" placeholder="Mosques near you..." />
-        </form>
-        <ul class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach :filteredMasjids">
-            <li data-bind="text:name, click:$root.showInfoWindow"></li>
-        </ul>
-    </aside>
-    <div id="map">
+            <form id="form" class="w3-margin-bottom">
+                <input data-bind="textInput:searchMasjid,event:{input:resetList}" placeholder="Mosques near you..." />
+            </form>
+            <ul class="w3-ul w3-black w3-text-white w3-hoverable" data-bind="foreach :filteredMasjids">
+                <li data-bind="text:name, click:$root.showInfoWindow"></li>
+            </ul>
+        </aside>
+        <div id="map">
+        </div>
     </div>
+    <div id="error-block">
 
+    </div>
     <script src="jquery.js"></script>
     <script>
         let onMobile = false;
+        let successBlock = $("#success-block");
+        let errorBlock = $("#error-block");
         let aside = $("aside");
         if (window.innerWidth > 400) {
             aside.toggleClass('list-view-hidden');
@@ -37,6 +42,17 @@
         $(".toggle-view").click(function() {
             aside.toggleClass('list-view-hidden');
         });
+
+        function showError(message) {
+            successBlock.hide();
+            errorBlock.append(`
+                <div class="w3-panel w3-red">
+                    <span onclick="this.parentElement.style.display='none'" class="w3-closebtn">&times;</span>
+                    <h3>Error!</h3>
+                    <p>${message}</p>
+                </div>
+            `);
+        }
     </script>
     <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
     <script src="ko.js"></script>

@@ -44,12 +44,17 @@ function main() {
         infoWindow = new google.maps.InfoWindow();
         let model = new MapViewModel(map);
 
-        firebase.database().ref('/masjids/').once('value').then(function(snapshot) {
-            snapshot.forEach(masjid => {
-                let masjidObj = masjid.val();
-                masjidObj.id = masjid.key;
-                model.addMasjid(new Masjid(masjidObj));
-            });
+        firebase.database().ref('/masjimds/').once('value').then(function(snapshot) {
+            if (snapshot.val()) {
+                snapshot.forEach(masjid => {
+                    let masjidObj = masjid.val();
+                    masjidObj.id = masjid.key;
+                    model.addMasjid(new Masjid(masjidObj));
+                });
+            } else {
+                showError('Something went wrong while getting masjids. Try again later!');
+            }
+
         });
 
         ko.applyBindings(model);
@@ -72,6 +77,7 @@ class Masjid {
         this.lng = masjid.lng;
         this.city = masjid.city;
         this.id = masjid.id;
+        this.createMarker();
     }
 
     /**
@@ -138,7 +144,6 @@ class MapViewModel {
         this.fullMasjids.push(masjid);
         this.filteredMasjids.push(masjid);
 
-        masjid.createMarker(); //create marker
         masjid.getMarker().addListener('click', () => { // add click listener
             this.showInfoWindow(masjid);
         });

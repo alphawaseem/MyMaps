@@ -1,15 +1,3 @@
-$.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBndW214czRP6Enei9aIff-vuTtoBbchNo&v=3")
-    .done(function(script, textStatus) {
-        main();
-    })
-    .fail(function(jqxhr, settings, exception) {
-        $("#map").text("Could not load maps");
-        console.error("Failed to get google maps. Please check your url and/or api key");
-    });
-
-
-
-
 /**
  * CONSTANTS
  */
@@ -166,6 +154,10 @@ class MapViewModel {
      * @param {Masjid} masjid - A masjid object
      **/
     showInfoWindow(masjid) {
+        if (onMobile) {
+            $("aside").toggleClass('list-view-hidden');
+
+        }
         let firebaseResult;
         firebase.database().ref('/masjids/' + masjid.id).once('value').then(function(snapshot) {
             firebaseResult = snapshot.val();

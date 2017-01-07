@@ -17,6 +17,10 @@ body {
     margin: 10px;
 }
 
+li {
+    cursor: pointer;
+}
+
 .list-view {
     position: fixed;
     z-index: 1;
